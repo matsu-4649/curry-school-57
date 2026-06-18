@@ -1,5 +1,3 @@
-app.js
-
 const stores = [
   {
     id: "coco",
