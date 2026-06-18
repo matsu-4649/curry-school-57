@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>スープカレー辛さ換算</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="converter" aria-labelledby="app-title">
+        <div class="heading">
+          <p class="test-label">テストページ</p>
+          <p class="eyebrow">Soup Curry Heat Converter</p>
+          <h1 id="app-title">スープカレー辛さ換算</h1>
+        </div>
+
+        <form class="controls">
+          <label class="field" for="storeSelect">
+            <span>これから行く店</span>
+            <select id="storeSelect" name="store"></select>
+          </label>
+
+          <label class="field" for="heatSelect">
+            <span>辛さ</span>
+            <select id="heatSelect" name="heat"></select>
+          </label>
+        </form>
+
+        <section class="summary" aria-live="polite">
+          <span id="sourceLabel"></span>
+          <strong id="sourceValue"></strong>
+        </section>
+
+        <section class="results" aria-labelledby="result-title">
+          <h2 id="result-title">換算結果</h2>
+          <div id="resultList" class="result-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
