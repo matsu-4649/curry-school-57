@@ -12,8 +12,8 @@ const stores = [
       { label: "7辛", heat: 7 },
       { label: "8辛", heat: 8 },
       { label: "9辛", heat: 9 },
-      { label: "10辛", heat: 10 },
-    ],
+      { label: "10辛", heat: 10 }
+    ]
   },
   {
     id: "rakkyo",
@@ -28,8 +28,8 @@ const stores = [
       { label: "7", heat: 5.5 },
       { label: "8", heat: 6.7 },
       { label: "9", heat: 8 },
-      { label: "10", heat: 9.5 },
-    ],
+      { label: "10", heat: 9.5 }
+    ]
   },
   {
     id: "okushiba",
@@ -42,87 +42,74 @@ const stores = [
       { label: "4", heat: 4.4 },
       { label: "5", heat: 6.8 },
       { label: "6", heat: 8.5 },
-      { label: "7", heat: 10 },
-    ],
-  },
+      { label: "7", heat: 10 }
+    ]
+  }
 ];
 
-const storeSelect = document.querySelector("#storeSelect");
-const heatSelect = document.querySelector("#heatSelect");
-const sourceLabel = document.querySelector("#sourceLabel");
-const sourceValue = document.querySelector("#sourceValue");
-const resultList = document.querySelector("#resultList");
+const storeSelect = document.getElementById("storeSelect");
+const heatSelect = document.getElementById("heatSelect");
+const sourceLabel = document.getElementById("sourceLabel");
+const sourceValue = document.getElementById("sourceValue");
+const resultList = document.getElementById("resultList");
 
-function getStore(storeId) {
-  return stores.find((store) => store.id === storeId);
+function getStore(id) {
+  return stores.find((store) => store.id === id);
 }
 
 function formatRange(levels) {
-  if (levels.length === 0) {
-    return "該当なし";
-  }
-
-  if (levels.length === 1) {
-    return levels[0].label;
-  }
-
-  return `${levels[0].label}〜${levels[levels.length - 1].label}`;
+  if (levels.length === 1) return levels[0].label;
+  return levels[0].label + "〜" + levels[levels.length - 1].label;
 }
 
 function getEquivalentLevels(targetStore, sourceHeat) {
   const tolerance = Math.max(0.55, sourceHeat * 0.18);
-  let matches = targetStore.levels.filter((level) => Math.abs(level.heat - sourceHeat) <= tolerance);
+  const matches = targetStore.levels.filter((level) => Math.abs(level.heat - sourceHeat) <= tolerance);
 
-  if (matches.length === 0) {
-    const nearest = targetStore.levels.reduce((best, level) => {
-      const bestDistance = Math.abs(best.heat - sourceHeat);
-      const currentDistance = Math.abs(level.heat - sourceHeat);
-      return currentDistance < bestDistance ? level : best;
-    });
-    matches = [nearest];
-  }
+  if (matches.length > 0) return matches;
 
-  return matches;
+  let nearest = targetStore.levels[0];
+  targetStore.levels.forEach((level) => {
+    if (Math.abs(level.heat - sourceHeat) < Math.abs(nearest.heat - sourceHeat)) {
+      nearest = level;
+    }
+  });
+
+  return [nearest];
 }
 
 function populateStores() {
-  storeSelect.innerHTML = stores
-    .filter((store) => store.id !== "coco")
-    .map((store) => `<option value="${store.id}">${store.name}</option>`)
+  const storesToChoose = stores.filter((store) => store.id !== "coco");
+  storeSelect.innerHTML = storesToChoose
+    .map((store) => '<option value="' + store.id + '">' + store.name + "</option>")
     .join("");
 }
 
 function populateHeatLevels() {
   const currentStore = getStore(storeSelect.value);
   heatSelect.innerHTML = currentStore.levels
-    .map((level, index) => `<option value="${index}">${level.label}</option>`)
+    .map((level, index) => '<option value="' + index + '">' + level.label + "</option>")
     .join("");
-
   heatSelect.value = "0";
 }
 
 function renderResults() {
   const currentStore = getStore(storeSelect.value);
   const currentLevel = currentStore.levels[Number(heatSelect.value)];
-  const targetStores = stores.filter((store) => store.id === "coco");
+  const coco = getStore("coco");
+  const equivalent = getEquivalentLevels(coco, currentLevel.heat);
 
   sourceLabel.textContent = "選択中";
-  sourceValue.textContent = `${currentStore.name} ${currentLevel.label}`;
+  sourceValue.textContent = currentStore.name + " " + currentLevel.label;
 
-  resultList.innerHTML = targetStores
-    .map((store) => {
-      const equivalent = getEquivalentLevels(store, currentLevel.heat);
-      return `
-        <article class="result-card">
-          <span class="store">${store.name}</span>
-          <span class="heat">${formatRange(equivalent)}</span>
-        </article>
-      `;
-    })
-    .join("");
+  resultList.innerHTML =
+    '<article class="result-card">' +
+    '<span class="store">CoCo壱</span>' +
+    '<span class="heat">' + formatRange(equivalent) + "</span>" +
+    "</article>";
 }
 
-storeSelect.addEventListener("change", () => {
+storeSelect.addEventListener("change", function () {
   populateHeatLevels();
   renderResults();
 });
